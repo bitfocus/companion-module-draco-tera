@@ -1,5 +1,5 @@
 {
-    "name": "draco-tera-kvm",
+    "name": "draco-tera",
     "version": "1.0.0",
     "api_version": "1.0.0",
     "keywords": [
@@ -7,13 +7,13 @@
         "Matrix"
     ],
     "manufacturer": "Draco",
-    "product": "Draco Tera KVM",
-    "shortname": "Draco-Tera-KVM",
+    "product": "Tera KVM",
+    "shortname": "draco-tera",
     "description": "",
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "author": "",
-    "license": "ISC"
+    "author": "Steve Tinsley",
+    "license": "MIT"
 }
