@@ -1,0 +1,19 @@
+{
+    "name": "draco-tera-kvm",
+    "version": "1.0.0",
+    "api_version": "1.0.0",
+    "keywords": [
+        "KVM",
+        "Matrix"
+    ],
+    "manufacturer": "Draco",
+    "product": "Draco Tera KVM",
+    "shortname": "Draco-Tera-KVM",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC"
+}
