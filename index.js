@@ -117,6 +117,53 @@ instance.prototype.actions = function (system) {
 				tooltip: 'Enter CON Number',
 				regex: self.REGEX_NUMBER
 			}]
+		},
+		'setconnection-bidirectional': {
+			label: 'Set Connection CON > CPU (bidirectional)',
+			options: [{
+				type: 'textinput',
+				label: 'CON',
+				id: 'con',
+				default: '',
+				tooltip: 'Enter CON Number',
+				regex: self.REGEX_NUMBER
+			},{
+				type: 'textinput',
+				label: 'CPU',
+				id: 'cpu',
+				default: '',
+				tooltip: 'Enter CPU Number',
+				regex: self.REGEX_NUMBER
+			}]
+		},
+		'setextendedconnection': {
+			label: 'Set extended connection',
+			options: [{
+				type: 'textinput',
+				label: 'CON',
+				id: 'con',
+				default: '',
+				tooltip: 'Enter CON Number',
+				regex: self.REGEX_NUMBER
+			},{
+				type: 'textinput',
+				label: 'CPU',
+				id: 'cpu',
+				default: '',
+				tooltip: 'Enter CPU Number',
+				regex: self.REGEX_NUMBER
+			},{
+				type: 'dropdown',
+				label: 'MODE',
+				id: 'mode',
+				default: 0,
+				choices: [
+						{ id: '0', label: 'Full Access' },
+						{ id: '1', label: 'Video Only' },
+						{ id: '3', label: 'Private Mode' }
+				],
+				tooltip: 'Enter Connection mode'
+			}]
 		}
 	};
 
@@ -157,9 +204,26 @@ instance.prototype.action = function (action) {
 				var cmd = new Buffer([0x1B, 0x5B, 0x49, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00]);
 				cmd.writeUInt16LE(parseInt(opt.con), 5);
 				cmd.writeUInt16LE(parseInt(opt.cpu), 7);
-				debug('CMD:  ', cmd);
+				debug('CMD setconnection:  ', cmd);
 
 			break;
+
+			case 'setconnection-bidirectional':
+				var cmd = new Buffer([0x1B, 0x5B, 0x50, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00]);
+				cmd.writeUInt16LE(parseInt(opt.cpu), 5);
+				cmd.writeUInt16LE(parseInt(opt.con), 7);
+				debug('CMD setconnection-bidirectional:  ', cmd);
+			break
+
+
+			case 'setextendedconnection':
+									//0x1B, 0x5B, 0x62, 0x0B, 0x00, 0xF4, 0x03, 0xC9, 0x0B, 0x02, 0x00
+				var cmd = new Buffer([0x1B, 0x5B, 0x62, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
+				cmd.writeUInt16LE(parseInt(opt.cpu), 5);
+				cmd.writeUInt16LE(parseInt(opt.con), 7);
+				cmd.writeUInt16LE(parseInt(opt.mode), 9);
+				debug('CMD setextendedconnection:  ', cmd);
+			break
 
 		}
 
