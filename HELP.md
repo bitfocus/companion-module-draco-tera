@@ -9,3 +9,5 @@ Note: This function should be enabled when using a media control via TCP/IP conn
 **Available Commands:**
 
 * Set connection of CPU device to CON device
+* Set Connection of CON device to CPU device (bidirectional)
+* Set extended connection
