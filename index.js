@@ -11,6 +11,7 @@ function instance(system, id, config) {
 	instance_skel.apply(this, arguments);
 	self.status(1,'Instance Initializing');
 	self.actions(); // export actions
+	self.init_feedbacks()
 	return self;
 }
 
@@ -56,7 +57,23 @@ instance.prototype.init_tcp = function() {
 			debug("Connected");
 		})
 
-		self.socket.on('data', function (data) {});
+		self.socket.on('data', function (data) {
+			var i = 0, line = '', offset = 0;
+			receivebuffer += chunk;
+
+			while ( (i = receivebuffer.indexOf('\n', offset)) !== -1) {
+				line = receivebuffer.substr(offset, i - offset);
+				offset = i + 1;
+				self.socket.emit('receiveline', line.toString());
+			}
+
+			receivebuffer = receivebuffer.substr(offset);
+		});
+
+		self.socket.on('receiveline', function (line) {
+			debug("Received line:", line);
+		});
+
 	}
 };
 
@@ -234,6 +251,75 @@ instance.prototype.action = function (action) {
 			}
 		}
 };
+
+
+
+
+
+
+/*--------FEEDBACKS--------*/
+
+instance.prototype.init_feedbacks = function() {
+	var self = this;
+	var feedbacks = {};
+
+	feedbacks['input_bg'] = {
+		label: 'Change background color by destination',
+		description: 'If the input specified is in use by the output specified, change background color of the bank',
+		options: [
+			{
+				type: 'colorpicker',
+				label: 'Foreground color',
+				id: 'fg',
+				default: this.rgb(0,0,0)
+			},
+			{
+				type: 'colorpicker',
+				label: 'Background color',
+				id: 'bg',
+				default: this.rgb(255,255,0)
+			},
+
+
+			{
+				type: 'textinput',
+				label: 'CON',
+				id: 'con',
+				default: '',
+				tooltip: 'Enter CON Number',
+				regex: self.REGEX_NUMBER
+			},{
+				type: 'textinput',
+				label: 'CPU',
+				id: 'cpu',
+				default: '',
+				tooltip: 'Enter CPU Number',
+				regex: self.REGEX_NUMBER
+			}
+		]
+	};
+	self.setFeedbackDefinitions(feedbacks)
+};
+
+
+
+
+
+
+
+instance.prototype.feedback = function(feedback, bank) {
+	var self = this;
+	debug("FEEDBACK OPTIONS: " + feedback.options)
+	debug("FEEDBACK TYPE: " + feedback.type)
+};
+
+
+
+
+
+
+
+
 
 
 instance_skel.extendedBy(instance);
