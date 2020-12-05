@@ -199,9 +199,9 @@ instance.prototype.action = function (action) {
 				// 	parseInt(opt.con)
 				// ]);
 
-				//cmd = new Buffer( "1B5B490900"+getHexPart(opt.con,1)+getHexPart(opt.con,0)+getHexPart(opt.cpu,1)+getHexPart(opt.cpu,0), "hex")
+				//cmd = Buffer.from( "1B5B490900"+getHexPart(opt.con,1)+getHexPart(opt.con,0)+getHexPart(opt.cpu,1)+getHexPart(opt.cpu,0), "hex")
 
-				var cmd = new Buffer([0x1B, 0x5B, 0x49, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00]);
+				var cmd = Buffer.from([0x1B, 0x5B, 0x49, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00]);
 				cmd.writeUInt16LE(parseInt(opt.con), 5);
 				cmd.writeUInt16LE(parseInt(opt.cpu), 7);
 				debug('CMD setconnection:  ', cmd);
@@ -209,7 +209,7 @@ instance.prototype.action = function (action) {
 			break;
 
 			case 'setconnection-bidirectional':
-				var cmd = new Buffer([0x1B, 0x5B, 0x50, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00]);
+				var cmd = Buffer.from([0x1B, 0x5B, 0x50, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00]);
 				cmd.writeUInt16LE(parseInt(opt.cpu), 5);
 				cmd.writeUInt16LE(parseInt(opt.con), 7);
 				debug('CMD setconnection-bidirectional:  ', cmd);
@@ -218,7 +218,7 @@ instance.prototype.action = function (action) {
 
 			case 'setextendedconnection':
 									//0x1B, 0x5B, 0x62, 0x0B, 0x00, 0xF4, 0x03, 0xC9, 0x0B, 0x02, 0x00
-				var cmd = new Buffer([0x1B, 0x5B, 0x62, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
+				var cmd = Buffer.from([0x1B, 0x5B, 0x62, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
 				cmd.writeUInt16LE(parseInt(opt.cpu), 5);
 				cmd.writeUInt16LE(parseInt(opt.con), 7);
 				cmd.writeUInt16LE(parseInt(opt.mode), 9);
