@@ -1,19 +1,27 @@
 {
-    "name": "draco-tera",
-    "version": "1.0.4",
-    "api_version": "1.0.0",
-    "keywords": [
-        "KVM",
-        "Matrix"
-    ],
-    "manufacturer": "Draco",
-    "product": "Tera KVM",
-    "shortname": "draco-tera",
-    "description": "",
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "author": "Steve Tinsley",
-    "license": "MIT"
+	"name": "draco-tera",
+	"version": "1.0.4",
+	"api_version": "1.0.0",
+	"keywords": [
+		"KVM",
+		"Matrix"
+	],
+	"manufacturer": "Draco",
+	"product": "Tera KVM",
+	"shortname": "draco-tera",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "Steve Tinsley",
+	"license": "MIT",
+	"homepage": "https://github.com/bitfocus/companion-module-draco-tera#readme",
+	"bugs": {
+		"url": "https://github.com/bitfocus/companion-module-draco-tera/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/bitfocus/companion-module-draco-tera.git"
+	}
 }
