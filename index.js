@@ -20,6 +20,7 @@ instance.prototype.init = function() {
 	debug = self.debug;
 	log = self.log;
 	self.init_tcp();
+	
 };
 
 
@@ -40,6 +41,8 @@ instance.prototype.init_tcp = function() {
 
 	if (self.config.host) {
 		self.socket = new tcp(self.config.host, 5555);
+		//self.socket.options.reconnect_interval = 0
+		//self.socket.socket.setKeepAlive(false)
 
 		self.socket.on('status_change', function (status, message) {
 			self.status(status, message);
@@ -58,6 +61,19 @@ instance.prototype.init_tcp = function() {
 
 		self.socket.on('data', function (data) {});
 	}
+
+	// Send a message every 45 seconds to keep the connection from dropping, KVM switch times out after 60 seconds.
+	if (self.config.keepAlive == true)
+	{
+		setInterval(function() {
+			var cmd = Buffer.from([0x1B, 0x5B, 0x68, 0x07, 0x00, 0x00]);
+			if (self.socket !== undefined) {
+				debug('sending ', cmd, "to", self.socket.host);
+				self.socket.send(cmd);
+			}
+		}, 45000);
+	}
+
 };
 
 
@@ -79,6 +95,19 @@ instance.prototype.config_fields = function () {
 			width: 12,
 			default: '192.168.100.99',
 			regex: self.REGEX_IP
+		},
+		{
+			type: 'checkbox',
+			label: 'Keep Alive Message',
+			id: 'keepAlive',
+			default: false
+		},
+		{
+			type: 'text',
+			id: 'keepAliveInfo',
+			width: 12,
+			label: '',
+			value: 'The keep alive message option sends a message to the switch every 45 seconds to keep the connection to the switch alive.'
 		}
 	];
 };
@@ -104,11 +133,23 @@ instance.prototype.actions = function (system) {
 			label: 'Set Connection CPU > CON',
 			options: [{
 				type: 'textinput',
+				label: 'CPU Device Name',
+				id: 'cpu-device-name',
+				default: '',
+				tooltip: 'Enter CPU Device Name',
+			},{
+				type: 'textinput',
 				label: 'CPU',
 				id: 'cpu',
 				default: '',
 				tooltip: 'Enter CPU Number',
 				regex: self.REGEX_NUMBER
+			},{
+				type: 'textinput',
+				label: 'CON Device Name',
+				id: 'con-device-name',
+				default: '',
+				tooltip: 'Enter Con Device Name',
 			},{
 				type: 'textinput',
 				label: 'CON',
@@ -122,11 +163,23 @@ instance.prototype.actions = function (system) {
 			label: 'Set Connection CON > CPU (bidirectional)',
 			options: [{
 				type: 'textinput',
+				label: 'CON Device Name',
+				id: 'con-device-name',
+				default: '',
+				tooltip: 'Enter Con Device Name',
+			},{
+				type: 'textinput',
 				label: 'CON',
 				id: 'con',
 				default: '',
 				tooltip: 'Enter CON Number',
 				regex: self.REGEX_NUMBER
+			},{
+				type: 'textinput',
+				label: 'CPU Device Name',
+				id: 'cpu-device-name',
+				default: '',
+				tooltip: 'Enter CPU Device Name',
 			},{
 				type: 'textinput',
 				label: 'CPU',
@@ -140,11 +193,23 @@ instance.prototype.actions = function (system) {
 			label: 'Set extended connection',
 			options: [{
 				type: 'textinput',
+				label: 'CON Device Name',
+				id: 'con-device-name',
+				default: '',
+				tooltip: 'Enter Con Device Name',
+			},{
+				type: 'textinput',
 				label: 'CON',
 				id: 'con',
 				default: '',
 				tooltip: 'Enter CON Number',
 				regex: self.REGEX_NUMBER
+			},{
+				type: 'textinput',
+				label: 'CPU Device Name',
+				id: 'cpu-device-name',
+				default: '',
+				tooltip: 'Enter CPU Device Name',
 			},{
 				type: 'textinput',
 				label: 'CPU',
@@ -163,6 +228,66 @@ instance.prototype.actions = function (system) {
 						{ id: '3', label: 'Private Mode' }
 				],
 				tooltip: 'Enter Connection mode'
+			}]
+		},
+		'setconnection-portmode': {
+			label: 'Set Connection CPU > CON Port Mode',
+			options: [{
+				type: 'textinput',
+				label: 'CPU Device Name',
+				id: 'cpu-device-name',
+				default: '',
+				tooltip: 'Enter CPU Device Name',
+			},{
+				type: 'textinput',
+				label: 'CPU',
+				id: 'cpu',
+				default: '',
+				tooltip: 'Enter CPU Port Number',
+				regex: self.REGEX_NUMBER
+			},{
+				type: 'textinput',
+				label: 'CON Device Name',
+				id: 'con-device-name',
+				default: '',
+				tooltip: 'Enter Con Device Name',
+			},{
+				type: 'textinput',
+				label: 'CON',
+				id: 'con',
+				default: '',
+				tooltip: 'Enter CON Port Number',
+				regex: self.REGEX_NUMBER
+			}]
+		},
+		'setconnection-bidirectional-portmode': {
+			label: 'Set Connection CON > CPU (bidirectional) Port Mode',
+			options: [{
+				type: 'textinput',
+				label: 'CON Device Name',
+				id: 'con-device-name',
+				default: '',
+				tooltip: 'Enter Con Device Name',
+			},{
+				type: 'textinput',
+				label: 'CON',
+				id: 'con',
+				default: '',
+				tooltip: 'Enter CON Port Number',
+				regex: self.REGEX_NUMBER
+			},{
+				type: 'textinput',
+				label: 'CPU Device Name',
+				id: 'cpu-device-name',
+				default: '',
+				tooltip: 'Enter CPU Device Name',
+			},{
+				type: 'textinput',
+				label: 'CPU',
+				id: 'cpu',
+				default: '',
+				tooltip: 'Enter CPU Port Number',
+				regex: self.REGEX_NUMBER
 			}]
 		}
 	};
@@ -206,7 +331,7 @@ instance.prototype.action = function (action) {
 				cmd.writeUInt16LE(parseInt(opt.cpu), 7);
 				debug('CMD setconnection:  ', cmd);
 
-			break;
+			break
 
 			case 'setconnection-bidirectional':
 				var cmd = Buffer.from([0x1B, 0x5B, 0x50, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00]);
@@ -225,6 +350,34 @@ instance.prototype.action = function (action) {
 				debug('CMD setextendedconnection:  ', cmd);
 			break
 
+			case 'setconnection-portmode':
+				//cmd = '0x1B 0x5B 0x49 0x09 0x00 0xC9 0x0B 0xF4 0x03';
+
+				// cmd = Buffer.from([
+				// 	0x1B,
+				// 	0x5B,
+				// 	0x49,
+				// 	0x09,
+				// 	0x00,
+				// 	parseInt(opt.cpu),
+				// 	parseInt(opt.con)
+				// ]);
+
+				//cmd = Buffer.from( "1B5B490900"+getHexPart(opt.con,1)+getHexPart(opt.con,0)+getHexPart(opt.cpu,1)+getHexPart(opt.cpu,0), "hex")
+
+				var cmd = Buffer.from([0x1B, 0x5B, 0x46, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00]);
+				cmd.writeUInt16LE(parseInt(opt.con), 5);
+				cmd.writeUInt16LE(parseInt(opt.cpu), 7);
+				debug('CMD setconnection:  ', cmd);
+
+			break
+
+			case 'setconnection-bidirectional-portmode':
+				var cmd = Buffer.from([0x1B, 0x5B, 0x43, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00]);
+				cmd.writeUInt16LE(parseInt(opt.con), 5);
+				cmd.writeUInt16LE(parseInt(opt.cpu), 7);
+				debug('CMD setconnection-bidirectional:  ', cmd);
+			break
 		}
 
 		if (cmd !== undefined) {
